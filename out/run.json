@@ -1,0 +1,26 @@
+{
+  "N": 40,
+  "F": 8.0,
+  "tmax": 20.0,
+  "steps": 600,
+  "method": "RK4FIXED",
+  "rtol": 1e-06,
+  "atol": 1e-09,
+  "ic": {
+    "mode": "random",
+    "eps": 0.01,
+    "seed": 123,
+    "source": "generated"
+  },
+  "visualization": {
+    "cmap": "RdBu_r",
+    "vmin": null,
+    "vmax": null,
+    "dpi": 200
+  },
+  "outputs": {
+    "image": null,
+    "arrays": "out",
+    "x0": "out/x0.npy"
+  }
+}

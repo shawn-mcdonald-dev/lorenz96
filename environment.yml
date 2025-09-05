@@ -1,0 +1,12 @@
+# environment.yml
+name: l96
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy>=1.26
+  - scipy>=1.11
+  - matplotlib>=3.8
+  - pandas>=2.2           # for manifest/CSV convenience
+  - tqdm>=4.66            # if your dataset maker shows progress
+  - pyqt
