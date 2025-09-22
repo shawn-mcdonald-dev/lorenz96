@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import torch
 from torch.utils.data import Dataset, DataLoader
-from l96 import FlexibleNN, train_model, run_experiments, plot_results, evaluate_model, plot_predictions_vs_true
+from l96 import FlexibleNN, train_model, evaluate_model, plot_loss_curves, plot_predictions_vs_true
 
 class L96Dataset(Dataset):
     def __init__(self, csv_file, data_dir, ids, scaler=None):
@@ -39,16 +39,7 @@ class L96Dataset(Dataset):
     def __getitem__(self, idx):
         return torch.tensor(self.inputs[idx]), torch.tensor(self.targets[idx])
 
-if __name__ == "__main__":
-  # Next steps: add arg parser here for data_dir, model params, training params, etc.
-  # For now, hardcode paths and params
-  data_dir = "data/l96_N40_T20_S600_1000"
-  csv_file = os.path.join(data_dir, "targets_time_mean_energy.csv")
-
-  # Read all IDs
-  df = pd.read_csv(csv_file)
-  ids = df['id'].tolist()
-
+def feed_forward_model(data_dir, csv_file, df, ids):
   # Train/val/test split
   train_ids, test_ids = train_test_split(ids, test_size=0.15, random_state=42)
   train_ids, val_ids = train_test_split(train_ids, test_size=0.176, random_state=42)  # 0.176*0.85 ≈ 0.15
@@ -71,30 +62,33 @@ if __name__ == "__main__":
   val_loader = DataLoader(val_ds, batch_size=16, shuffle=False)
   test_loader = DataLoader(test_ds, batch_size=16, shuffle=False)
 
-  architectures = [
-      [128, 64],
-      [64, 32],
-      [32, 16],
-      [16],
-      [8],
-  ]
-
-  results = run_experiments(input_dim=41, train_loader=train_loader, val_loader=val_loader, architectures=architectures, epochs=50)
-
-  plot_results(results)
-
-  # Train final model on chosen architecture
-  best_arch = min(results, key=results.get)  # architecture with lowest val loss
-  print(f"Best architecture: {best_arch}")
-
-  final_model = FlexibleNN(input_dim=41, hidden_layers=eval(best_arch))
-  final_model, _ = train_model(final_model, train_loader, val_loader, epochs=50)
+  model = FlexibleNN(input_dim=41, hidden_layers=[64, 32])
+  trained_model, history = train_model(model, train_loader, val_loader, epochs=50)
+  train_losses = history["train_loss"]
+  val_losses = history["val_loss"]
+  
+  plot_loss_curves(train_losses, val_losses)
 
   # Evaluate on test set
-  preds, trues = evaluate_model(final_model, test_loader)
+  preds, trues = evaluate_model(model, test_loader)
 
   # Example: compute RMSE
   rmse = np.sqrt(np.mean((preds - trues) ** 2))
   print(f"Test RMSE: {rmse:.6f}")
 
+  # Add baseline here (linear model)
+
   plot_predictions_vs_true(trues, preds)
+  
+
+if __name__ == "__main__":
+  # Next steps: add arg parser here for data_dir, model params, training params, etc.
+  # For now, hardcode paths and params
+  data_dir = "data/l96_N40_T20_S600_1000"
+  csv_file = os.path.join(data_dir, "targets_time_mean_energy.csv")
+
+  # Read all IDs
+  df = pd.read_csv(csv_file)
+  ids = df['id'].tolist()
+
+  feed_forward_model(data_dir, csv_file, df, ids)

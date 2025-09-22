@@ -63,18 +63,6 @@ def train_model(model, train_loader, val_loader, epochs=50, lr=1e-3, device="cpu
     return model, history
 
 # ========================
-# Experiment Runner
-# ========================
-def run_experiments(input_dim, train_loader, val_loader, architectures, epochs=50, lr=1e-3, device="cpu"):
-    results = {}
-    for arch in architectures:
-        print(f"Training architecture: {arch}")
-        model = FlexibleNN(input_dim, hidden_layers=arch)
-        trained_model, history = train_model(model, train_loader, val_loader, epochs=epochs, lr=lr, device=device)
-        results[str(arch)] = history["val_loss"][-1]
-    return results
-
-# ========================
 # Evaluation
 # ========================
 def evaluate_model(model, test_loader, device="cpu"):
@@ -92,12 +80,17 @@ def evaluate_model(model, test_loader, device="cpu"):
 # ========================
 # Visualization
 # ========================
-def plot_results(results):
-    plt.plot(list(results.keys()), list(results.values()), marker="o")
-    plt.xlabel("Architecture")
-    plt.ylabel("Final Validation Loss")
-    plt.title("Performance vs Network Size - 50 epochs")
-    plt.xticks(rotation=45)
+def plot_loss_curves(train_losses, val_losses):
+    """Plot training and validation loss curves."""
+    plt.figure(figsize=(8,5))
+    plt.plot(train_losses, label="Train Loss")
+    plt.plot(val_losses, label="Validation Loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("MSE Loss")
+    plt.title("Training and Validation Loss [64, 32]")
+    plt.legend()
+    plt.grid(True)
+    plt.savefig("loss_curves.png")
     plt.show()
 
 def plot_predictions_vs_true(y_true, y_pred):
