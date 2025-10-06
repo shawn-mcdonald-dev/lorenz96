@@ -17,3 +17,46 @@ This work sets the foundation for future research into surrogate modeling and in
 ✨ Acknowledgments
 
 This project is part of ongoing research in chaotic systems modeling and AI-driven surrogate models.
+
+# Step 1: Project Setup
+
+### 1. Clone Repository
+```sh
+git clone https://github.com/shawn-mcdonald-dev/lorenz96
+cd lorenz96
+```
+
+### 2. Installing Dependencies
+Create and activate conda env:
+```sh
+conda env create -f environment.yml
+conda activate l96
+```
+
+# Step 2: Create raw datasets
+```sh
+# Example: 100 samples, deterministic RK4, moderate variability in F and x0
+python make_l96_dataset.py \
+  --outdir data/l96_N40_T20_S600 \
+  --num-samples 100 \
+  --jobs 4 \
+  --N 40 --tmax 20 --steps 600 \
+  --F-min 4 --F-max 16 \
+  --ic-mode random --eps 2.0 \
+  --method RK4FIXED
+```
+
+**Expected output:**
+```sh
+Wrote 100 samples and manifest: data/l96_N40_T20_S600/manifest.csv
+```
+
+# Step 3: Get metrics from dataset
+```sh
+python l96_metrics_cli.py --path data/l96_N40_T20_S600
+```
+
+**Expected output:**
+```sh
+Wrote 100 rows to data/l96_N40_T20_S600/targets_time_mean_energy.csv
+```
