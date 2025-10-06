@@ -36,7 +36,7 @@ conda activate l96
 # Step 2: Create raw datasets
 ```sh
 # Example: 100 samples, deterministic RK4, moderate variability in F and x0
-python make_l96_dataset.py \
+python ./simulation/make_l96_dataset.py \
   --outdir data/l96_N40_T20_S600 \
   --num-samples 100 \
   --jobs 4 \
@@ -53,7 +53,7 @@ Wrote 100 samples and manifest: data/l96_N40_T20_S600/manifest.csv
 
 # Step 3: Get metrics from dataset
 ```sh
-python l96_metrics_cli.py --path data/l96_N40_T20_S600
+python ./simulation/l96_metrics_cli.py --path data/l96_N40_T20_S600
 ```
 
 **Expected output:**
