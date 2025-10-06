@@ -60,3 +60,8 @@ python l96_metrics_cli.py --path data/l96_N40_T20_S600
 ```sh
 Wrote 100 rows to data/l96_N40_T20_S600/targets_time_mean_energy.csv
 ```
+
+# Step 4: Train surrogate model
+```sh
+python train_surrogate.py --data-dir data/l96_N40_T20_S600
+```
